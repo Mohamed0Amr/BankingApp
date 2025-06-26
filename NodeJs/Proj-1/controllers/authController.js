@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const db = require('../db/db'); // assuming db.js connects and exports mysql
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 
