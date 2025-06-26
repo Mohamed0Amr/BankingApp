@@ -2,6 +2,10 @@ const express = require('express');
 const app = express();
 const authRoutes = require('./routes/auth');
 require('dotenv').config(); // Load environment variables from .env file
+// to connect with flutter
+const cors = require('cors');
+app.use(cors());
+
 
 app.use(express.json()); // to read req.body
 
