@@ -1,31 +1,26 @@
 require('dotenv').config();
 const mysql = require('mysql2');
 
-// Create the connection pool (better than single connection)
 const pool = mysql.createPool({
   host: process.env.DB_HOST || 'localhost',
   user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || 'MohamedAmr@2002',
+  password: process.env.DB_PASSWORD || '',
   database: process.env.DB_NAME || 'bankingapp',
+  port: process.env.DB_PORT || 3306,  // Fixed port number
   waitForConnections: true,
   connectionLimit: 10,
-  queueLimit: 0
+  queueLimit: 0,
+  ssl: process.env.DB_SSL ? { rejectUnauthorized: false } : null
 });
 
-// Verify connection
+// Test connection
 pool.getConnection((err, connection) => {
   if (err) {
     console.error('❌ DB connection failed:', err);
-    return;
+    process.exit(1);
   }
-  console.log('✅ Connected to MySQL database as root!');
-  connection.release(); // Release the connection back to the pool
+  console.log('✅ DB connected successfully!');
+  connection.release();
 });
 
-// Promisify for async/await support
-const promisePool = pool.promise();
-
-module.exports = {
-  pool,
-  promisePool
-};
+module.exports = pool.promise();
