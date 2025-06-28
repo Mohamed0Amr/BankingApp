@@ -7,6 +7,9 @@ const cors = require('cors');
 app.use(cors());
 
 
+app.use(express.json({ limit: '10kb' })); // Prevent large payloads
+app.use(express.urlencoded({ extended: true }));
+
 app.use(express.json()); // to read req.body
 
 // Mount your auth routes
