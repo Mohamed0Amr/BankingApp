@@ -4,7 +4,7 @@ import '../../Model/AuthService.dart';
 import 'dart:convert';
 
 class GetDataService {
-  static const String baseUrl = 'http://10.0.2.2:3000/api/auth';
+  static const String baseUrl = 'https://bankingapp-production-62f3.up.railway.app';
 
   static Future<GetAccountsResponse> getAccountsByUserId() async {
     final token = await AuthService.getToken();
@@ -19,7 +19,7 @@ class GetDataService {
       );
     }
 
-    final url = Uri.parse('$baseUrl/getUserId/$userId');
+    final url = Uri.parse('$baseUrl/api/auth/getUserId/$userId');
     final headers = {
       'Authorization': 'Bearer $token',
       'Content-Type': 'application/json',

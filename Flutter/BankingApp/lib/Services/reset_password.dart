@@ -2,13 +2,13 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class ResetPasswordService {
-  static const String baseUrl = 'http://10.0.2.2:3000/api'; // Your base URL
+  static const String baseUrl = 'https://bankingapp-production-62f3.up.railway.app';
 
   static Future<Map<String, dynamic>> resetPassword({
     required String username,
     required String newPassword,
   }) async {
-    final url = Uri.parse('$baseUrl/reset-password');
+    final url = Uri.parse('$baseUrl/api/auth/reset-password');
     final headers = {"Content-Type": "application/json"};
     final body = json.encode({
       'username': username,
