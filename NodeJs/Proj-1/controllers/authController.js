@@ -64,110 +64,112 @@ const loginUser = async (req, res) => {
 };
 
 // CheckUsername Function
-const checkUsername = (req, res) => {
-    const { username } = req.body;
+const checkUsername = async (req, res) => {
+  const { username } = req.body;
 
-    if (!username) {
-        return res.status(400).json({ message: 'Username is required' });
+  if (!username) {
+    return res.status(400).json({ message: 'Username is required' });
+  }
+
+  try {
+    const [results] = await db.query(
+      'SELECT email FROM Users WHERE username = ?',
+      [username]
+    );
+
+    if (results.length === 0) {
+      return res.status(404).json({ message: 'Username not found' });
     }
 
-    // Log the username to check if it's coming through properly
-    console.log('Checking username:', username);
-
-    // Query the database to find the user by username
-    db.query('SELECT email FROM Users WHERE username = ?', [username], (err, results) => {
-        if (err) {
-            console.error('Database error:', err);  // Log the actual error
-            return res.status(500).json({ message: 'Database error' });
-        }
-
-        // If no results are found, return a 404 response
-        if (results.length === 0) {
-            console.log('Username not found');
-            return res.status(404).json({ message: 'Username not found' });
-        }
-
-        // If a matching username is found, return the email
-        const email = results[0].email;
-        console.log('Email found:', email);
-        res.json({ email });
-    });
+    const email = results[0].email;
+    res.json({ email });
+  } catch (err) {
+    console.error('checkUsername error:', err);
+    res.status(500).json({ message: 'Database error' });
+  }
 };
+
 
 
 // ResetPassword Function
-const resetPassword = (req, res) => {
-    const { username, newPassword } = req.body;
+const resetPassword = async (req, res) => {
+  const { username, newPassword } = req.body;
 
-    if (!username || !newPassword) {
-        return res.status(400).json({ message: 'Username and new password are required' });
-    }
+  if (!username || !newPassword) {
+    return res.status(400).json({ message: 'Username and new password are required' });
+  }
 
-    // Hash the new password before storing it (use bcrypt or any other hashing method)
+  try {
     const hashedPassword = bcrypt.hashSync(newPassword, 10);
 
-    // Update the user's password in the database
-    db.query('UPDATE Users SET password_hash = ? WHERE username = ?', [hashedPassword, username], (err, results) => {
-        if (err) {
-            return res.status(500).json({ message: 'Database error' });
-        }
+    const [results] = await db.query(
+      'UPDATE Users SET password_hash = ? WHERE username = ?',
+      [hashedPassword, username]
+    );
 
-        if (results.affectedRows === 0) {
-            return res.status(404).json({ message: 'Username not found' });
-        }
+    if (results.affectedRows === 0) {
+      return res.status(404).json({ message: 'Username not found' });
+    }
 
-        res.json({ message: 'Password updated successfully' });
-    });
+    res.json({ message: 'Password updated successfully' });
+  } catch (err) {
+    console.error('resetPassword error:', err);
+    res.status(500).json({ message: 'Database error' });
+  }
 };
+
 
 // Create Account Function
-const createAccount = (req, res) => {
-    const { user_id, account_type } = req.body;
+const createAccount = async (req, res) => {
+  const { user_id, account_type } = req.body;
 
-    if (!user_id || !account_type) {
-        return res.status(400).json({ message: 'user_id and account_type are required' });
-    }
+  if (!user_id || !account_type) {
+    return res.status(400).json({ message: 'user_id and account_type are required' });
+  }
 
-    // إنشاء رقم حساب عشوائي
-    const account_number = 'AC' + Math.floor(100000000 + Math.random() * 900000000);
-    const balance = 500;
-    const created_at = new Date();
+  const account_number = 'AC' + Math.floor(100000000 + Math.random() * 900000000);
+  const balance = 500;
+  const created_at = new Date();
 
-    db.query(
-        'INSERT INTO accounts (user_id, account_number, account_type, balance, created_at) VALUES (?, ?, ?, ?, ?)',
-        [user_id, account_number, account_type, balance, created_at],
-        (err, results) => {
-            if (err) {
-                console.error('Database error:', err);
-                return res.status(500).json({ message: 'Database error' });
-            }
-
-            res.status(201).json({
-                message: 'Account created successfully',
-                account_number,
-                account_type,
-                balance,
-            });
-        }
+  try {
+    await db.query(
+      'INSERT INTO accounts (user_id, account_number, account_type, balance, created_at) VALUES (?, ?, ?, ?, ?)',
+      [user_id, account_number, account_type, balance, created_at]
     );
-};
-// Get the UserID
-const getAccountsByUserId = (req, res) => {
-    const userId = req.params.userId;
 
-    if (!userId) {
-        return res.status(400).json({ message: 'user_id is required' });
-    }
-
-    db.query('SELECT * FROM accounts WHERE user_id = ?', [userId], (err, results) => {
-        if (err) {
-            console.error('Database error:', err);
-            return res.status(500).json({ message: 'Database error' });
-        }
-
-        res.status(200).json({ accounts: results });
+    res.status(201).json({
+      message: 'Account created successfully',
+      account_number,
+      account_type,
+      balance,
     });
+  } catch (err) {
+    console.error('createAccount error:', err);
+    res.status(500).json({ message: 'Database error' });
+  }
 };
+
+// Get the UserID
+const getAccountsByUserId = async (req, res) => {
+  const userId = req.params.userId;
+
+  if (!userId) {
+    return res.status(400).json({ message: 'user_id is required' });
+  }
+
+  try {
+    const [results] = await db.query(
+      'SELECT * FROM accounts WHERE user_id = ?',
+      [userId]
+    );
+
+    res.status(200).json({ accounts: results });
+  } catch (err) {
+    console.error('getAccountsByUserId error:', err);
+    res.status(500).json({ message: 'Database error' });
+  }
+};
+
 
 
 
