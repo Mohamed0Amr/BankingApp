@@ -4,7 +4,7 @@ const mysql = require('mysql2');
 const pool = mysql.createPool({
   host: process.env.MYSQLHOST || 'localhost', // Will use 'mysql.railway.internal' in Railway
   user: process.env.MYSQLUSER || 'root',
-  password: process.env.MYSQLPASSWORD || '',
+  password: process.env.MYSQLPASSWORD || 'MohamedAmr@2002',
   database: process.env.MYSQLDATABASE || 'bankingapp', // Note: Railway uses 'railway' as default DB
   port: process.env.MYSQLPORT || 3306,
   waitForConnections: true,
