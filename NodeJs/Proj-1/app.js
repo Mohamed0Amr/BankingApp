@@ -12,7 +12,7 @@ app.use(express.json()); // to read req.body
 // Mount your auth routes
 app.use('/api/auth', authRoutes);
 
-const PORT = 3000;
-app.listen(PORT, () => {
-    console.log(`🚀 Server running at http://localhost:${PORT}`);
+const PORT = process.env.PORT || 3000; // Railway uses dynamic ports
+app.listen(PORT, '0.0.0.0', () => {  // Listen on all network interfaces
+  console.log(`Server running on port ${PORT}`);
 });
