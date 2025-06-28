@@ -6,59 +6,63 @@ const nodemailer = require('nodemailer');
 
 
 // Register User Function
-const registerUser  = (req, res) => {
-    const { username, password, email } = req.body;
+const registerUser = async (req, res) => {
+  const { username, password, email } = req.body;
 
-    if (!username || !password || !email) {
-        return res.status(400).json({ message: 'All fields are required' });
-    }
+  if (!username || !password || !email) {
+    return res.status(400).json({ message: 'All fields are required' });
+  }
 
+  try {
     const hashedPassword = bcrypt.hashSync(password, 10);
 
-    db.query(
-        'INSERT INTO Users (username, password_hash, email) VALUES (?, ?, ?)', 
-        [username, hashedPassword, email], 
-        (err, results) => {
-            if (err) {
-                if (err.code === 'ER_DUP_ENTRY') {
-                    return res.status(409).json({ message: 'Username or email already exists' });
-                }
-                return res.status(500).json({ error: err.message });
-            }
-            res.status(201).json({ message: 'User registered successfully!' });
-        }
+    const [result] = await db.query(
+      'INSERT INTO Users (username, password_hash, email) VALUES (?, ?, ?)',
+      [username, hashedPassword, email]
     );
+
+    res.status(201).json({ message: 'User registered successfully!' });
+  } catch (err) {
+    if (err.code === 'ER_DUP_ENTRY') {
+      return res.status(409).json({ message: 'Username or email already exists' });
+    }
+    console.error('Registration error:', err);
+    return res.status(500).json({ error: err.message });
+  }
 };
+
 
 // Login User Function
-const loginUser  = (req, res) => {
-    const { username, password } = req.body;
+const loginUser = async (req, res) => {
+  const { username, password } = req.body;
 
-    if (!username || !password) {
-        return res.status(400).json({ message: 'All fields are required' });
+  if (!username || !password) {
+    return res.status(400).json({ message: 'All fields are required' });
+  }
+
+  try {
+    const [results] = await db.query('SELECT * FROM Users WHERE username = ?', [username]);
+
+    if (results.length === 0) {
+      return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    // Find the user in the database
-    db.query('SELECT * FROM Users WHERE username = ?', [username], (err, results) => {
-        if (err || results.length === 0) {
-            return res.status(401).json({ message: 'Invalid credentials' });
-        }
+    const user = results[0];
+    const isPasswordValid = bcrypt.compareSync(password, user.password_hash);
 
-        const user = results[0];
+    if (!isPasswordValid) {
+      return res.status(401).json({ message: 'Invalid credentials' });
+    }
 
-        // Compare the password
-        const isPasswordValid = bcrypt.compareSync(password, user.password_hash);
+    const token = jwt.sign({ userId: user.user_id }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
-        if (!isPasswordValid) {
-            return res.status(401).json({ message: 'Invalid credentials' });
-        }
-
-        // Generate a JWT token
-        const token = jwt.sign({ userId: user.user_id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-
-        res.json({ token });
-    });
+    res.json({ token });
+  } catch (err) {
+    console.error('Login error:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
 };
+
 // CheckUsername Function
 const checkUsername = (req, res) => {
     const { username } = req.body;

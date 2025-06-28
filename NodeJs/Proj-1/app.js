@@ -18,6 +18,16 @@ app.use(cors()); // Fixed from core()
 app.use(express.urlencoded({ extended: true })); // Fixed syntax
 app.use(express.json());
 
+app.get('/', (req, res) => {
+  res.send('✅ Banking App is running');
+});
+
+app.use((err, req, res, next) => {
+  console.error('Unhandled error:', err.stack || err);
+  res.status(500).json({ message: 'Internal server error' });
+});
+
+
 // 3. Routes
 app.use('/api/auth', authRouter);
 
