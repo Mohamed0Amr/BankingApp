@@ -12,7 +12,7 @@ app.use(express.json()); // to read req.body
 // Mount your auth routes
 app.use('/api/auth', authRoutes);
 
-const PORT = 3000;
+const PORT = 3306;
 app.listen(PORT, () => {
     console.log(`🚀 Server running at http://localhost:${PORT}`);
 });
