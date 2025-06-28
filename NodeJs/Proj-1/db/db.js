@@ -19,18 +19,13 @@ const pool = mysql.createPool({
   connectTimeout: 10000 // 10 second timeout
 });
 // Test connection
+// In your db.js, add this debug code:
 pool.getConnection((err, connection) => {
   if (err) {
-    console.error('❌ DB connection failed:', err);
-    console.log('Current DB Config:', {
-      host: process.env.MYSQLHOST,
-      user: process.env.MYSQLUSER,
-      database: process.env.MYSQLDATABASE,
-      port: process.env.MYSQLPORT
-    });
+    console.error('❌ DB Connection Error:', err);
     process.exit(1);
   }
-  console.log('✅ DB connected successfully!');
+  console.log('✅ DB Connected. Thread ID:', connection.threadId);
   connection.release();
 });
 

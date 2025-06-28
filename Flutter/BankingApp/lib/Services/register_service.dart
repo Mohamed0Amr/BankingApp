@@ -2,14 +2,14 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class RegisterService {
-  static const String baseUrl = 'http://10.0.2.2:3000/api/auth';
+  static const String baseUrl = 'https://bankingapp-production-62f3.up.railway.app';
 
   static Future<Map<String, dynamic>> register({
     required String username,
     required String password,
     required String email,
   }) async {
-    final url = Uri.parse('$baseUrl/register');
+    final url = Uri.parse('$baseUrl/api/auth/register');
     final headers = {"Content-Type": "application/json"};
     final body = json.encode({
       'username': username,
