@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import '../Model/User.dart';
 
 class LoginService {
-  static const String baseUrl = 'http://10.0.2.2:3000/api/auth';
+  static const String baseUrl = 'https://bankingapp-production-62f3.up.railway.app';
 
   static String _getUserIdFromToken(String token) {
     try {
@@ -26,7 +26,7 @@ class LoginService {
     required String username,
     required String password,
   }) async {
-    final url = Uri.parse('$baseUrl/login');
+    final url = Uri.parse('$baseUrl/api/auth/login');
     final headers = {"Content-Type": "application/json"};
     final body = json.encode({'username': username, 'password': password});
 
