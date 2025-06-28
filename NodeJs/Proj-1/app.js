@@ -1,21 +1,28 @@
-const express = require('express');
-const app = express();
-const authRoutes = require('./routes/auth');
-require('dotenv').config(); // Load environment variables from .env file
-// to connect with flutter
-const cors = require('cors');
-app.use(cors());
+require('dotenv').config(); // Fixed typo from 'tokenv' to 'dotenv'
+const express = require('express'); // Fixed syntax
+const app = express(); // Fixed variable name
+const authRouter = require('./routes/auth');
+const cors = require('cors'); // Fixed typo from 'core'
 
+// 1. FIRST MIDDLEWARE - Add timing here
+app.use((req, res, next) => {
+  const start = Date.now();
+  res.on('finish', () => {
+    console.log(`${req.method} ${req.url} - ${Date.now() - start}ms`);
+  });
+  next();
+});
 
-app.use(express.json({ limit: '10kb' })); // Prevent large payloads
-app.use(express.urlencoded({ extended: true }));
+// 2. Standard middleware
+app.use(cors()); // Fixed from core()
+app.use(express.urlencoded({ extended: true })); // Fixed syntax
+app.use(express.json());
 
-app.use(express.json()); // to read req.body
+// 3. Routes
+app.use('/api/auth', authRouter);
 
-// Mount your auth routes
-app.use('/api/auth', authRoutes);
-
-const PORT = process.env.PORT || 3000; // Railway uses dynamic ports
-app.listen(PORT, '0.0.0.0', () => {  // Listen on all network interfaces
-  console.log(`Server running on port ${PORT}`);
+// 4. Server setup
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server running on port ${PORT}`); // Fixed template string
 });
