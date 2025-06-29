@@ -17,14 +17,15 @@ class Account {
 
   factory Account.fromJson(Map<String, dynamic> json) {
     return Account(
-      accountId: json['account_id'] as int,
-      userId: json['user_id'] as int,
-      accountNumber: json['account_number'] as String,
-      accountType: json['account_type'] as String,
-      balance: double.parse(json['balance'].toString()),
-      createdAt: DateTime.parse(json['created_at']),
+      accountId: json['account_id'] ?? 0,
+      userId: json['user_id'] ?? 0,
+      accountNumber: json['account_number'] ?? '',
+      accountType: json['account_type'] ?? '',
+      balance: double.tryParse(json['balance'].toString()) ?? 0.0,
+      createdAt: DateTime.tryParse(json['created_at'] ?? '') ?? DateTime.now(),
     );
   }
+
 
   // Helper methods for display
   String get formattedBalance => '\$${balance.toStringAsFixed(2)}';

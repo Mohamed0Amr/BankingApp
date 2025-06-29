@@ -46,7 +46,7 @@ class AccountService {
       );
     }
 
-    final url = Uri.parse('$baseUrl/createAccount');
+    final url = Uri.parse('$baseUrl/api/auth/createAccount');
     final headers = {
       'Authorization': 'Bearer $token',
       'Content-Type': 'application/json',
