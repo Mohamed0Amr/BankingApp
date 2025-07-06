@@ -1,6 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- ✅ Add this line -->
+    <uses-permission android:name="android.permission.INTERNET"/>
     <application
-        android:label="bankingapp"
+        android:label="Bank"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
