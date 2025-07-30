@@ -4,7 +4,8 @@ import 'package:http/http.dart' as http;
 import '../Model/User.dart';
 
 class LoginService {
-  static const String baseUrl = 'https://bankingapp-production-62f3.up.railway.app';
+  // static const String baseUrl = 'https://bankingapp-production-62f3.up.railway.app';
+  static const String baseUrl = 'http://192.168.1.5:3000';
 
   static String _getUserIdFromToken(String token) {
     try {

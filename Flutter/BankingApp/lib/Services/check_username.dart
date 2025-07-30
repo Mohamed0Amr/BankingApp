@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class CheckUsernameService {
-  static const String baseUrl = 'https://bankingapp-production-62f3.up.railway.app';
+  static const String baseUrl = 'http://192.168.1.5:3000';
 
   static Future<Map<String, dynamic>> checkUsername({
     required String username,
